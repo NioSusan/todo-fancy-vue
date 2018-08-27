@@ -32,29 +32,10 @@
 </template>
 
 <script>
-window.fbAsyncInit = function() {
-	FB.init({
-		appId: "2058258811156993",
-		autoLogAppEvents: true,
-		xfbml: true,
-		version: "v3.1"
-	});
-};
-
-(function(d, s, id) {
-	var js,
-		fjs = d.getElementsByTagName(s)[0];
-	if (d.getElementById(id)) {
-		return;
-	}
-	js = d.createElement(s);
-	js.id = id;
-	js.src = "https://connect.facebook.net/en_US/sdk.js";
-	fjs.parentNode.insertBefore(js, fjs);
-})(document, "script", "facebook-jssdk");
-
 import { eventBus } from "../../main";
 import axios from "axios";
+// import facebookLogin from 'facebook-login-vuejs';
+
 export default {
 	data() {
 		return {
@@ -89,14 +70,14 @@ export default {
 		checkLoginState() {
 			FB.getLoginStatus(function(response) {
 				if (response.status === "connected") {
-					console.log("HIIII!")
+					console.log("HIIII!");
 					axios
 						.post(
 							"http://localhost:3000/api/users/loginFb",
 							response.authResponse
 						)
 						.then(result => {
-							console.log(result.data.msg)
+							console.log(result.data.msg);
 							this.submitted = true;
 							this.message = result.data.msg;
 							let token = result.data.token;
@@ -108,8 +89,9 @@ export default {
 						});
 				}
 			});
-		},
-	}
+		}
+	},
+	
 };
 </script>
 
