@@ -34,7 +34,7 @@
 <script>
 import { eventBus } from "../../main";
 import axios from "axios";
-// import facebookLogin from 'facebook-login-vuejs';
+import swal from 'sweetalert';
 
 export default {
 	data() {
@@ -42,7 +42,7 @@ export default {
 			email: "",
 			password: "",
 			submitted: false,
-			message: ""
+			message: "",
 		};
 	},
 	methods: {
@@ -61,19 +61,18 @@ export default {
 					let token = res.data.token;
 					localStorage.setItem("token", token);
 					eventBus.$emit("status", this.submitted); //2. pass this to siblings globally
+					swal(`${res.data.msg}`, 'Welcome!', 'success');
 				})
 				.catch(err => {
 					this.message = "error";
 				});
 		},
-
 		checkLoginState() {
 			FB.getLoginStatus(function(response) {
 				if (response.status === "connected") {
-					console.log("HIIII!");
 					axios
 						.post(
-							"http://localhost:3000/api/users/loginFb",
+							"http://server-todo.hasilpanen.com/api/users/loginFb",
 							response.authResponse
 						)
 						.then(result => {
@@ -83,15 +82,39 @@ export default {
 							let token = result.data.token;
 							localStorage.setItem("token", token);
 							eventBus.$emit("status", this.submitted);
+							swal(`${result.data.msg}`, 'Welcome!', 'success');
 						})
 						.catch(err => {
 							this.message = "error";
 						});
+				} else {
+					FB.login(
+						function(response) {
+							console.log(response);
+							axios
+								.post(
+									"http://server-todo.hasilpanen.com/api/users/loginFb",
+									response.authResponse
+								)
+								.then(result => {
+									console.log(result.data.msg);
+									this.submitted = true;
+									this.message = result.data.msg;
+									let token = result.data.token;
+									localStorage.setItem("token", token);
+									eventBus.$emit("status", this.submitted);
+									swal(`${result.data.msg}`, 'Welcome!', 'success');
+								})
+								.catch(err => {
+									this.message = "error";
+								});
+						},
+						{ scope: "public_profile,email" }
+					);
 				}
-			});
+			}, true);
 		}
-	},
-	
+	}
 };
 </script>
 

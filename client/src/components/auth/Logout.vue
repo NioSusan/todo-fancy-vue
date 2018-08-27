@@ -6,7 +6,7 @@
                     <div class="form-group">
                         <h1>Are you sure?</h1>
                     </div>
-                    <button type="submit" @click.native="logout" class="btn btn-primary"> YES </button>
+                    <button type="submit" @click="logout" class="btn btn-primary"> YES </button>
                 </div>
             </div>
         </form>
@@ -14,11 +14,12 @@
 </template>
 
 <script>
+import swal from 'sweetalert';
 export default {
     data() {
 		return {
             submitted: false,
-            message : 'Good Bye!'
+            message : 'Good Bye!',
 		};
 	},
     methods:{
@@ -26,6 +27,8 @@ export default {
             this.submitted = true;
             localStorage.removeItem("token");
             eventBus.$emit('isActive', false) //pass this to siblings globally
+            swal('You will be missed!', 'Goodbye!', 'success');
+            window.location.href = '/';
         }
     }
 }
